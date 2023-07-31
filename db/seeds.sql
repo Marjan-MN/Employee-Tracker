@@ -1,25 +1,43 @@
-INSERT INTO department (id, name) 
+-- DEPARTMENT
+INSERT INTO department (name)
 VALUES 
-(001, "Sales"),
-(002, "Engineering"), 
-(003, "Legal"), 
-(004, "Finance");
-​
-INSERT INTO role (id, title, salary, department_id)
+("Executive Office"),
+("Finance"),
+("Engineering"),
+("Marketing"),
+("HR"),
+("DevOps"),
+("Training"),
+("Sales"),
+("BusDev"),
+("ITOps");
+
+-- ROLE
+INSERT INTO role (title, salary, department_id)
 VALUES 
-(001, "Sales Lead", 10000, 1),
-(002, "Salesperson", 80000, 1),
-(003, "Lead Engineer", 150000, 2),
-(004, "Software Engineer", 120000, 2),
-(005, "Legal Team Lead", 250000, 3),
-(006, "Lawyer", 190000, 3),
-(007, "Accountant", 125000, 4);
-​
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+("CEO", 500000, 1),
+("CFO", 400000, 1),
+("Chief Engineer", 250000, 1),
+("CMO", 200000, 4),
+("Junior Engineer", 75000, 3),
+("HR Manager", 100000, 5),
+("VP Sales", 125000, 8),
+("ITOps Manager", 100000, 10),
+("Training Director", 150000, 7),
+("VP BusDev", 125000, 9),
+("COO", 425000, 1),
+("CTO", 425000, 1),
+("EVP DevOps", 300000, 1);
+
+-- EMPLOYEE 
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES 
-(001, "Kaidan", "Alenko", 1, null),
-(002, "Liara", "Tsoni", 3, null),
-(003, "Tali", "Zorah", 4, 2),
-(004, "Urdnot", "Wrex", 6, null),
-(005, "Garrus", "Vakarian", 2, 1),
-(006, "Miranda", "Lawson", 2, 1);
+("Monica", "DeSantis", 1, 1),
+("Veronique", "LaCroix", 2, 1),
+("Scarlett", "LeRouge", 3, 2),
+("Zac", "Black", 4, 3),
+("Jake", "Rittenhouse", 5, 4),
+("Theo", "Anders", 6, 5),
+("Jenna", "Marbles", 7, 6),
+("Mary", "Lamb", 8, 7),
+("Jack", "Vite", 9, 8);
