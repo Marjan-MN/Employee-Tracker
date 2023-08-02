@@ -1,19 +1,9 @@
 // Import packages
-const express = require('express');
+const inquirer = require('inquirer')
 const mysql = require('mysql2')
 const db = require('./config/connection')
 const { table } = require('table')
 const logo = require("asciiart-logo");
-
-
-
-const PORT = process.env.PORT || 3001;
-const app = express()
-
-// Express middleware
-app.use(express.urlencoded({ extended: true}));
-app.use(express.json())
-
 
 console.log(
   logo({
@@ -39,6 +29,7 @@ console.log(
 // });
 
 // Start ===============================
+
 function start() {
   inquirer
       .prompt([
@@ -86,6 +77,8 @@ function start() {
           }
       })
 };
+
+
 // Add department function =============
 function addDepartment() {
   inquirer
@@ -103,11 +96,12 @@ function addDepartment() {
 }
 // View employees function
 function addEmployee(){
-db.query('SELECT * FROM employees', (err, empRes) => {
-      console.log(results);
+db.query('SELECT * FROM employee', (err, empRes) => {
+      console.log(empRes);
       const employees = empRes.map(employee => {
-        return employee.first_name + ' ' + employee.last_name;
+        return {name: employee.first_name + ' ' + employee.last_name, value:employee.id};
     });
+     employees.push({name:"No manager" , value:null})
     db.query(
         'SELECT * FROM role', (err, roleRes) => {
             const roles = roleRes.map(role => {
@@ -138,22 +132,18 @@ db.query('SELECT * FROM employees', (err, empRes) => {
                     choices: employees
                 }
                 ]).then((res) => {
-                    const { first_name, last_name } = res;
-                    const manager = empRes.filter(employee => {
-                        return employee.first_name + ' ' + employee.last_name === res.manager;
-                    })[0];
-                    const role_id = roleRes.filter(role => {
-                        return role.title === res.role;
-                    })[0];
-                    const manager_id = manager ? manager.id : null;
-                    db.query(
-                        'insert into employee set ?',
-                        { first_name, last_name, role_id, manager_id }, (err, result) => {
-                            if (err) throw err;
-                        }
-                    )
-                    start();
-                });
+                    console.log(res)
+                    // const { first_name, last_name } = res;
+                    // const manager = empRes.filter(employee => {
+                    //     return employee.first_name + ' ' + employee.last_name === res.manager;
+                    // });
+                    // const role_id = roleRes.filter(role => {
+                    //     return role.title === res.role;
+                    // });
+                    // const manager_id = manager ? manager.id : null;
+                    db.query('INSERT INTO employee SET ?', res)
+                   
+                }).then(()=> console.log("adding employee")).then(()=> start())
         }
     )
 }
@@ -165,7 +155,9 @@ function addRole() {
   db.query(
       'SELECT * FROM department', (err, result) => {
           if (err) throw err;
-          const departments = result.map(deparment => department.name);
+          const departments = result.map(department => ({name:department.name, value:department.id }));
+        //   departments.push({name:"no department", value:null})
+          console.log("depatment", departments)
           inquirer
               .prompt([
                   {
@@ -177,12 +169,12 @@ function addRole() {
                       name: 'salary',
                       type: 'input',
                       message: 'Enter the salary of the new role: ',
-                      validate: salary => {
-                          if (isNaN(salary) || salary < 0) {
-                              return 'Please enter a number'
-                          }
-                          return true;
-                      }
+                    //   validate: salary => {
+                    //       if (isNaN(salary) || salary < 0) {
+                    //           return 'Please enter a number'
+                    //       }
+                    //       return true;
+                    //   }
                   },
                   {
                       name: 'department',
@@ -191,21 +183,22 @@ function addRole() {
                       choices: departments
                   }
               ]).then((res) => {
+                console.log("res", res)
                   const { title } = res;
                   const salary = res.salary;
-                  const department_id = res.department_id;
-              })[0];
+                  const department_id = res.department;
+                  db.query(
+                      'insert into role set ?',
+                      {
+                          title, salary, department_id
+                      },
+                      (err, result) => {
+                          if (err) throw err;
+                          start();
+                      }
+                  )
+              });
 
-          db.query(
-              'insert into role set ?',
-              {
-                  title, salary, department_id
-              },
-              (err, result) => {
-                  if (err) throw err;
-                  start();
-              }
-          )
       }
   )
 }
@@ -220,20 +213,9 @@ function viewByDepartment() {
   });
 };
 
-// View department function ============
-function viewByDepartment() {
-  const query = 'select * from department';
-  db.query(query, (err, res) => {
-      if (err) throw err;
-      console.log(table(toTableFormat(res)));
-      start();
-  });
-};
-// =====================================
-
 // View roles function =================
 function viewRoles() {
-  const query = 'select * from role';
+  const query = 'SELECT * FROM role';
   db.query(query, (err, res) => {
       if (err) throw err;
       console.log(table(toTableFormat(res)));
@@ -244,23 +226,22 @@ function viewRoles() {
 
 // View employees function =============
 function viewEmployees() {
-  const query = 'select * from employee';
+  const query = 'SELECT * FROM employee';
   db.query(query, (err, res) => {
       if (err) throw err;
       console.log(table(toTableFormat(res)));
       start();
   });
 };
-// =====================================
 
 // Update employee roles ===============
 function updateEmpRoles() {
-  const query = 'select * from employee';
+  const query = 'SELECT * FROM employee';
   db.query(query, (err, res) => {
       const employees = res.map(employee => {
           return employee.first_name + ' ' + employee.last_name;
       });
-      db.query('select * from role', (err, result) => {
+      db.query('SELECT * FROM role', (err, result) => {
           const roles = result.map(role => {
               return role.title;
           });
@@ -301,11 +282,4 @@ function toTableFormat(arr) {
   return [header, ...rows];
 }
 
-  // Default response for any other request (Not Found)
-  app.use((req, res) => {
-    res.status(404).end();
-  });
-  
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+start();

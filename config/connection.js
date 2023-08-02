@@ -9,7 +9,7 @@ const db = mysql.createConnection(
   // process.env.DB_PASSWORD,
   {
     host: "localhost",
-    port: 3306,
+    // port: 3306,
     user: "root",
     password: "Mojgan1987Mocha@$@",
     database: "employee_db"
