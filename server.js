@@ -22,11 +22,6 @@ console.log(
       .render()
 );
 
-// db.connect(function (err) {
-//   if (err) throw err;
-//   console.log(chalk.yellow("Welcome to the Employee Tracker! You are connected as ID " + db.threadId + ".\n"));
-//   start();
-// });
 
 // Start ===============================
 
@@ -102,10 +97,11 @@ db.query('SELECT * FROM employee', (err, empRes) => {
         return {name: employee.first_name + ' ' + employee.last_name, value:employee.id};
     });
      employees.push({name:"No manager" , value:null})
+     console.log(employees)
     db.query(
         'SELECT * FROM role', (err, roleRes) => {
             const roles = roleRes.map(role => {
-                return role.title;
+                return {name: role.title,value:role.id};
             });
 
             inquirer
@@ -133,22 +129,19 @@ db.query('SELECT * FROM employee', (err, empRes) => {
                 }
                 ]).then((res) => {
                     console.log(res)
-                    // const { first_name, last_name } = res;
-                    // const manager = empRes.filter(employee => {
-                    //     return employee.first_name + ' ' + employee.last_name === res.manager;
-                    // });
-                    // const role_id = roleRes.filter(role => {
-                    //     return role.title === res.role;
-                    // });
-                    // const manager_id = manager ? manager.id : null;
-                    db.query('INSERT INTO employee SET ?', res)
-                   
-                }).then(()=> console.log("adding employee")).then(()=> start())
-        }
-    )
-}
-)
-}
+                    const { first_name, last_name,manager_id ,role_id} = res;
+                  
+                    db.query('INSERT INTO employee SET ?', 
+                    {
+                        first_name, last_name, role_id, manager_id
+                    },
+                    (err, result) => {
+                        if (err) throw err;
+                        start();
+                    })
+        })
+})
+})};
 
 // Add role function ===================
 function addRole() {
@@ -169,12 +162,6 @@ function addRole() {
                       name: 'salary',
                       type: 'input',
                       message: 'Enter the salary of the new role: ',
-                    //   validate: salary => {
-                    //       if (isNaN(salary) || salary < 0) {
-                    //           return 'Please enter a number'
-                    //       }
-                    //       return true;
-                    //   }
                   },
                   {
                       name: 'department',
@@ -259,12 +246,18 @@ function updateEmpRoles() {
                       message: 'What\'s the employee\'s new role?',
                       choices: roles
                   }
-              ]).then(answer => {
+              ]).then((answer) => {
                   const id = result.filter(employee => {
                       return employee.first_name + ' ' + employee.last_name === answer.employee;
-                  })[0]
+                  })
+            
                   db.query(
-                      'update employee set role_id = ? where id = ?', [role_id, id], (err, result) => {
+                    'UPDATE employee SET role_id = ? WHERE id = ?',
+                    [
+                        answer.role_id,
+                        answer.id,
+                    ],
+                    (err, result) => {
                           if (err) throw err;
                           start();
                       }
