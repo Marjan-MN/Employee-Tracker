@@ -3,7 +3,6 @@
 ## Description
 Employee Tracker is a command-line application from scratch to manage a company's employee database, using Node.js, Inquirer, and MySQL.
 
-[View deployed HEROKU app here!]()
 
   * [Installation](#install)
   * [Usage](#usage)
@@ -50,6 +49,8 @@ This will run the server where you can find the page on localhost:3001. To end y
 
 ## Mock-Up
 
-[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./assets/Screenshot%202023-08-01%20221650.jpg)]
-
-https://drive.google.com/file/d/12Oh0CdlxIKuUWKL56WQFu9rBNuKMXpB9/view
+[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./assets/Untitled_%20Aug%203,%202023%204_59%20PM.gif)]
+[![ScreenShots of the app.](./assets/Screenshot%202023-08-01%20221650.jpg)]
+[![ScreenShots of the app.](./assets/Screenshot%202023-08-03%20171503.jpg)]
+[![ScreenShots of the app.](./assets/Screenshot%202023-08-03%20171529.jpg)]
+[![ScreenShots of the app.](./assets/Screenshot%202023-08-03%20171553.jpg)]
